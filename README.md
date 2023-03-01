@@ -1,6 +1,7 @@
 # Instructions
 > This SDK is only applicable to the LiDAR products sold by Shenzhen LDROBOT Co., LTD. The product models are :
 > - LDROBOT LiDAR LD14
+> - LDROBOT LiDAR LD14P
 
 ## step 0. get LiDAR Linux SDK
 ```bash
@@ -34,6 +35,12 @@ $ ./auto_build.sh
 
 ## step 3: run
 ``` bash
-$ ./build/ldlidar_sl_node <serial_number>
-# example ./build/ldlidar_sl_node /dev/ttyS0
+$ ./build/ldlidar_sl_node <product_type> <serial_number>
+# eg:
+# LDLiDAR LD14
+$ ./build/ldlidar_sl_node LD14  /dev/ttyUSB0
+# LDLiDAR LD14P, measuring frequnecy is 2300Hz
+$ ./build/ldlidar_sl_node LD14P_2300HZ  /dev/ttyUSB0
+# LDLiDAR LD14P, measuring frequnecy is 4000Hz
+$ ./build/ldlidar_sl_node LD14P_4000HZ  /dev/ttyUSB0
 ```

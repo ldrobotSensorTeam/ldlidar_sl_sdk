@@ -2,6 +2,7 @@
 
 >此SDK仅适用于深圳乐动机器人有限公司销售的激光雷达产品，产品型号为:
 > - LDROBOT LiDAR LD14
+> - LDROBOT LiDAR LD14P
 
 ## 0. 获取雷达的Linux SDK
 ```bash
@@ -34,6 +35,12 @@ $ ./auto_build.sh
 
 ## 3. 运行
 ``` bash
-$ ./build/ldlidar_sl_node <serial_number>
-# 例如 ./build/ldlidar_sl_node /dev/ttyS0
+$ ./build/ldlidar_sl_node <product_type> <serial_number>
+# eg:
+# LDLiDAR LD14
+$ ./build/ldlidar_sl_node LD14  /dev/ttyUSB0
+# LDLiDAR LD14P, measuring frequnecy is 2300Hz
+$ ./build/ldlidar_sl_node LD14P_2300HZ  /dev/ttyUSB0
+# LDLiDAR LD14P, measuring frequnecy is 4000Hz
+$ ./build/ldlidar_sl_node LD14P_4000HZ  /dev/ttyUSB0
 ```
