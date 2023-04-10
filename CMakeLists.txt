@@ -22,35 +22,22 @@ endif()
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include/core/
-  ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include/dataprocess/
-  ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include/filter/
-  ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include/logger/
-  ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include/serialcom/
+  ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/include
 )
 
-file(GLOB  LDLIDAR_DRI_CORE ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/core/*.cpp)
-file(GLOB  LDLIDAR_DRI_DATARPC ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/dataprocess/*.cpp)
-file(GLOB  LDLIDAR_DRI_FILTER ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/filter/*.cpp)
-file(GLOB  LDLIDAR_DRI_LOGGER ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/logger/*.cpp)
-file(GLOB  LDLIDAR_DRI_SERIAL ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/serialcom/*.cpp)
+file(GLOB  LDLIDAR_DRI ${CMAKE_CURRENT_SOURCE_DIR}/ldlidar_driver/src/*.cpp)
 
-add_executable(${PROJECT_NAME}_node ${CMAKE_CURRENT_SOURCE_DIR}/src/linux_demo/demo.cpp)
+add_executable(
+  ${PROJECT_NAME}_node 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/linux_demo/demo.cpp
+)
 
 add_library(ldlidar_driver_static STATIC 
-  ${LDLIDAR_DRI_CORE} 
-  ${LDLIDAR_DRI_DATARPC} 
-  ${LDLIDAR_DRI_FILTER} 
-  ${LDLIDAR_DRI_LOGGER} 
-  ${LDLIDAR_DRI_SERIAL}
+  ${LDLIDAR_DRI} 
 )
 
 add_library(ldlidar_driver_shared SHARED 
-  ${LDLIDAR_DRI_CORE} 
-  ${LDLIDAR_DRI_DATARPC} 
-  ${LDLIDAR_DRI_FILTER} 
-  ${LDLIDAR_DRI_LOGGER} 
-  ${LDLIDAR_DRI_SERIAL}
+  ${LDLIDAR_DRI} 
 )
 
 # rename library name

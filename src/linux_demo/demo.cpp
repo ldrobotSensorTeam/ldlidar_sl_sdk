@@ -38,19 +38,69 @@ uint64_t GetTimestamp(void) {
 //   // ...
 // }
 
+class LdsParamInit {
+ public:
+  struct LdsInfoStruct {
+    std::string ldtype_str;
+    ldlidar::LDType ldtype_enum;
+    uint32_t baudrate;
+  } LdsInfoArrary[3];
+
+  LdsParamInit() {
+    LdsInfoArrary[0] = {"LD14", ldlidar::LDType::LD_14, 115200};
+    LdsInfoArrary[1] = {"LD14P_2300HZ", ldlidar::LDType::LD_14P_2300HZ, 230400};
+    LdsInfoArrary[2] = {"LD14P_4000HZ", ldlidar::LDType::LD_14P_4000HZ, 230400};
+  }
+
+  ldlidar::LDType GetLdsType(std::string in_str) {
+    for (auto item : LdsInfoArrary) {
+      if (!strcmp(in_str.c_str(), item.ldtype_str.c_str())) {
+        return item.ldtype_enum;
+      }
+    }
+    return ldlidar::LDType::NO_VER;
+  }
+
+  uint32_t GetLdsPortBaudrateVal(std::string in_str) {
+    for (auto item : LdsInfoArrary) {
+      if (!strcmp(in_str.c_str(), item.ldtype_str.c_str())) {
+        return item.baudrate;
+      }
+    }
+    return 0;
+  }
+};
+
 int main(int argc, char **argv) {
   
-  if (argc != 2) {
+  if (argc != 3) {
     LDS_LOG_INFO("cmd error","");
-    LDS_LOG_INFO("please input: ./ldlidar_sl_node <serial_number>","");
+    LDS_LOG_INFO("please input: ./ldlidar_sl_node <product_type> <serial_number>","");
     LDS_LOG_INFO("example:","");
-    LDS_LOG_INFO("./ldlidar_sl_node /dev/ttyUSB0","");
-    LDS_LOG_INFO("or","");
-    LDS_LOG_INFO("./ldlidar_sl_node /dev/ttyS0","");
+    LDS_LOG_INFO("./ldlidar_sl_node LD14 /dev/ttyUSB0","");
+    LDS_LOG_INFO("./ldlidar_sl_node LD14P_2300HZ /dev/ttyUSB0","");
+    LDS_LOG_INFO("./ldlidar_sl_node LD14P_4000HZ /dev/ttyUSB0","");
     exit(EXIT_FAILURE);
   }
   
-  std::string port_name(argv[1]);
+  std::string ldlidar_type_str(argv[1]);
+  std::string port_name(argv[2]);
+  LdsParamInit param_initialize;
+
+  // select ldrobot lidar sensor type.
+  ldlidar::LDType ldlidar_type_dest;
+  ldlidar_type_dest = param_initialize.GetLdsType(ldlidar_type_str);
+  if (ldlidar_type_dest == ldlidar::LDType::NO_VER) {
+    LDS_LOG_ERROR("ldlidar_type_str value is not sure: %s", ldlidar_type_str.c_str());
+    exit(EXIT_FAILURE);
+  }
+  // if use serial communications interface, as select serial baudrate paramters.
+  uint32_t baudrate_val;
+  baudrate_val = param_initialize.GetLdsPortBaudrateVal(ldlidar_type_str);
+  if (!baudrate_val) {
+    LDS_LOG_ERROR("ldlidar_type_str value is not sure: %s", ldlidar_type_str.c_str());
+    exit(EXIT_FAILURE);
+  }
   
   ldlidar::LDLidarDriver* node = new ldlidar::LDLidarDriver();
   
@@ -60,7 +110,7 @@ int main(int argc, char **argv) {
 
   node->EnableFilterAlgorithnmProcess(true);
 
-  if (node->Start(ldlidar::LDType::LD_14, port_name)) {
+  if (node->Start(ldlidar_type_dest, port_name, baudrate_val)) {
     LDS_LOG_INFO("ldlidar node start is success","");
     // LidarPowerOn();
   } else {
@@ -89,6 +139,8 @@ int main(int argc, char **argv) {
         LDS_LOG_INFO("speed(Hz):%f, size:%d,stamp_front:%llu, stamp_back:%llu",
             lidar_scan_freq, laser_scan_points.size(), laser_scan_points.front().stamp, laser_scan_points.back().stamp);
 #endif
+
+#if 0
         //  output 2d point cloud data
         for (auto point : laser_scan_points) {
 #ifdef __LP64__
@@ -99,6 +151,7 @@ int main(int argc, char **argv) {
               point.stamp, point.angle, point.distance, point.intensity);
 #endif
         }
+#endif
         break;
       }
       case ldlidar::LidarStatus::DATA_TIME_OUT: {
